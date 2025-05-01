@@ -3,7 +3,7 @@ name: Deploy Frontend
 on:
   push:
     branches:
-      - main
+      - main  # или другая ветка, по которой ты хочешь запускать деплой
 
 jobs:
   deploy:
@@ -16,9 +16,13 @@ jobs:
       - name: Setup SSH
         run: |
           mkdir -p ~/.ssh
+          echo "Private key:"
+          echo "${{ secrets.SSH_PRIVATE_KEY }}"  # добавляем вывод ключа для проверки
           echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/id_rsa
           chmod 600 ~/.ssh/id_rsa
+          echo "Adding host to known_hosts..."
           ssh-keyscan -H ${{ secrets.SSH_HOST }} >> ~/.ssh/known_hosts
+          cat ~/.ssh/known_hosts  # выводим содержимое файла known_hosts для проверки
 
       - name: Deploy via SSH
         run: |
